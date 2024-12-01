@@ -1,0 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Color+Emoji&family=Quicksand:wght@300..700&display=swap');
+
+html, body {
+  font-family: $default-font-family;
+  font-size: $default-font-size;
+  line-height: $default-line-height;
+  color: $default-font-color;
+
+  * {
+    box-sizing: border-box;
+    font-family: $default-font-family;
+  }
+}

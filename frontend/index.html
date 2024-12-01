@@ -1,0 +1,47 @@
+<!doctype html>
+<html>
+<head>
+    <title>Verify ID</title>
+    <link rel="stylesheet" href="resources/css/styles.css">
+</head>
+<body>
+<div class="container">
+    <header class="header">
+        <h1 class="title">Verify ID</h1>
+
+        <link rel="icon" href="resources/images/icon.png" type="image/x-icon">
+
+    </header>
+    <section class="content">
+        <p>
+            This is a proof-of-concept for verifying ID using image processing. Please upload a photo of your ID and a
+            selfie.<br>
+            <strong>The files uploaded through this form will not be stored on the server.</strong><br>
+            <em>Information read from the id cards and their metadata can be logged for development and debug purposes.</em>
+        </p>
+        <form id="verifyForm" action="" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="id-card">Upload ID</label>
+                <input type="file" id="id_image" name="id_image" class="form-control" accept="image/*" required>
+            </div>
+            <div class="form-group">
+                <label for="selfie">Upload Selfie</label>
+                <input type="file" id="selfie_image" name="selfie_image" class="form-control" accept="image/*" required>
+            </div>
+            <div class="form-group buttons">
+                <input type="submit" value="Verify">
+                <div class="loading hidden" id="loading">
+                    <div class="loading-spinner"></div>
+                </div>
+            </div>
+        </form>
+    </section>
+    <section class="result hidden" id="result">
+        <h2>Result</h2>
+        <div class="result-content" id="resultContent"></div>
+    </section>
+</div>
+
+<script src="resources/js/app.js"></script>
+</body>
+</html>
