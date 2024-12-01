@@ -1,0 +1,19 @@
+Source: id-verification
+Section: unknown
+Priority: optional
+Maintainer: Olivier Bitsch <olivier.b@iabsis.com>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+Standards-Version: 4.6.2
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/id-verification
+#Vcs-Git: https://salsa.debian.org/debian/id-verification.git
+
+Package: id-verification
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: <insert up to 60 chars description>
+ <Insert long description, indented with spaces.>

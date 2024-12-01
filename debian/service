@@ -1,0 +1,13 @@
+[Unit]
+Description=ID Verfication
+After=network.target
+
+[Service]
+User=id-verification
+Environment=VIRTUAL_ENV=/usr/share/id-verification/venv
+EnvironmentFile=/etc/id-verification/id-verification.conf
+WorkingDirectory=/usr/share/id-verification/
+ExecStart=/usr/share/id-verification/venv/bin/gunicorn wsgi:app
+
+[Install]
+WantedBy=multi-user.target

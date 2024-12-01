@@ -1,0 +1,5 @@
+id-verification (0.9.0) bookworm; urgency=medium
+
+  * Initial release.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Sun, 01 Dec 2024 11:12:30 +0000
