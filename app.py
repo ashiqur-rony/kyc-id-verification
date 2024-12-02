@@ -32,6 +32,9 @@ def verify():
     Verify the ID card with the provided picture.
     :return: string JSON response
     """
+    if not check_request(request):
+        return jsonify({'message': 'Unauthorized request.'}), 401
+
     id_image = request.files['id_image']
     selfie_image = request.files['selfie_image']
 
@@ -78,6 +81,41 @@ def verify():
     os.remove(picture_path)
 
     return jsonify(return_data), 200
+
+
+def check_request(request):
+    """
+    Check if the request is authorized.
+    :param request: request object
+    :return: boolean
+    """
+    approved_origins = []
+
+    with open('data/keys.csv', 'r') as f:
+        f.readline()    # Skip the header
+        while True:
+            keys = f.readline().strip().split(',')
+            if not keys:
+                break
+            approved_origins.append(
+                {
+                    'origin': keys[0],
+                    'api_key': keys[1]
+                }
+            )
+
+
+    auth_header = request.headers.get('Authorization')
+    if auth_header and auth_header.startswith('Bearer '):
+        api_key = auth_header.split(' ')[1]
+        origin = request.headers.get('Origin').replace('http://', '').replace('https://', '')
+
+        requester = next((app for app in approved_origins if origin in app['origin'] and api_key == app['api_key']),
+                         None)
+        if requester:
+            return True
+
+    return False
 
 
 if __name__ == '__main__':
