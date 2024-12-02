@@ -94,9 +94,10 @@ def check_request(request):
     with open('data/keys.csv', 'r') as f:
         f.readline()    # Skip the header
         while True:
-            keys = f.readline().strip().split(',')
+            keys = f.readline()
             if not keys:
                 break
+            keys = keys.strip().split(',')
             approved_origins.append(
                 {
                     'origin': keys[0],
