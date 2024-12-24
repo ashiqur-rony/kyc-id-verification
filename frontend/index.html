@@ -10,6 +10,7 @@
         <h1 class="title">Verify ID</h1>
 
         <link rel="icon" href="resources/images/icon.png" type="image/x-icon">
+        <script type="text/javascript" src="resources/js/key.js"></script>
 
     </header>
     <section class="content">
@@ -28,6 +29,21 @@
                 <label for="selfie">Upload Selfie</label>
                 <input type="file" id="selfie_image" name="selfie_image" class="form-control" accept="image/*" required>
             </div>
+            <div class="form-group">
+                <label for="document">Document Type</label>
+                <select name="document" id="document" class="form-control">
+                    <option value="passport">Passport</option>
+                    <option value="govt_id">Driving License/Govt. ID</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="method">Data Reading Method</label>
+                <select name="method" id="method" class="form-control">
+                    <option value="gemini">Gemini</option>
+                    <option value="mindee">Mindee</option>
+                </select>
+            </div>
             <div class="form-group buttons">
                 <input type="submit" value="Verify">
                 <div class="loading hidden" id="loading">
@@ -36,9 +52,11 @@
             </div>
         </form>
     </section>
-    <section class="result hidden" id="result">
+    <section class="result-container hidden" id="result">
         <h2>Result</h2>
-        <div class="result-content" id="resultContent"></div>
+        <div class="result result-output" id="resultOutput"></div>
+        <div class="result result-data" id="resultData"></div>
+        <div class="result result-content" id="resultContent"></div>
     </section>
 </div>
 
