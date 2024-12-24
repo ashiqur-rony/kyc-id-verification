@@ -3,6 +3,8 @@ from flask_cors import CORS
 import json
 import os
 import lib.IDVerification as Verify
+import lib.LLM as llm
+import lib.Mindee as mnd
 from flask import request
 from dotenv import load_dotenv
 import time
@@ -12,6 +14,7 @@ CORS(app)
 
 load_dotenv()
 gemini_api_key = os.getenv('GEMINI_API_KEY')
+mindee_api_key = os.getenv('MINDEE_API_KEY')
 upload_path = os.getenv('UPLOAD_PATH')
 
 app.config['UPLOAD_FOLDER'] = upload_path
@@ -37,6 +40,8 @@ def verify():
 
     id_image = request.files['id_image']
     selfie_image = request.files['selfie_image']
+    document = request.form.get('document')
+    method = request.form.get('method')
 
     if not os.path.exists(app.config['UPLOAD_FOLDER']):
         os.makedirs('uploads', exist_ok=True)
@@ -56,14 +61,26 @@ def verify():
     try:
         id_match = id_reader.match_id_with_picture(id_path, picture_path)
     except Exception as e:
+        # Delete the ID and selfie images before returning the error
+        os.remove(id_path)
+        os.remove(picture_path)
         return jsonify({'message': f'Error: {str(e)}'}), 500
 
     return_data = {}
 
     if id_match and json.loads(id_match)['match']:
         try:
-            id_data = id_reader.read_id_data(id_path)
+            id_data = None
+            if method == 'gemini':
+                llm_match = llm.LLM(name='gemini', id_path=id_path, api_key=gemini_api_key)
+                id_data = llm_match.read_id_data_with_gemini()
+            elif method == 'mindee':
+                mindee_match = mnd.Mindee(id_path=id_path, api_key=mindee_api_key)
+                id_data = mindee_match.read_id_data()
         except Exception as e:
+            # Delete the ID and selfie images before returning the error
+            os.remove(id_path)
+            os.remove(picture_path)
             return jsonify({'message': f'Error: {str(e)}'}), 500
 
         if id_data:
@@ -92,7 +109,7 @@ def check_request(request):
     approved_origins = []
 
     with open('data/keys.csv', 'r') as f:
-        f.readline()    # Skip the header
+        f.readline()  # Skip the header
         while True:
             keys = f.readline()
             if not keys:
@@ -104,7 +121,6 @@ def check_request(request):
                     'api_key': keys[1]
                 }
             )
-
 
     auth_header = request.headers.get('Authorization')
     if auth_header and auth_header.startswith('Bearer '):

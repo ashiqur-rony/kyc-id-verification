@@ -1,3 +1,13 @@
+id-verification (0.9.3) bookworm; urgency=high
+
+  * Created separated key file for JavaScript.
+  * Added option to choose data reading method in the frontend.
+  * Created separate modules for data reading libraries.
+  * Streamlined the response JSON format.
+  * Implemented `Mindee` API for ID reading.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Tue, 24 Dec 2024 06:26:30 -0600
+
 id-verification (0.9.2) bookworm; urgency=high
 
   * Fixed bug in reading API key from file.
