@@ -1,3 +1,9 @@
+id-verification (0.9.4) bookworm; urgency=high
+
+  * Updated success and failure messages.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Tue, 24 Dec 2024 06:41:30 -0600
+
 id-verification (0.9.3) bookworm; urgency=high
 
   * Created separated key file for JavaScript.

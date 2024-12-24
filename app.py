@@ -66,9 +66,13 @@ def verify():
         os.remove(picture_path)
         return jsonify({'message': f'Error: {str(e)}'}), 500
 
-    return_data = {}
+    return_data = {
+        'face_match': False,
+        'data_found': False,
+    }
 
     if id_match and json.loads(id_match)['match']:
+        return_data['face_match'] = True
         try:
             id_data = None
             if method == 'gemini':
@@ -81,9 +85,11 @@ def verify():
             # Delete the ID and selfie images before returning the error
             os.remove(id_path)
             os.remove(picture_path)
-            return jsonify({'message': f'Error: {str(e)}'}), 500
+            return_data['message'] = f'Error: {str(e)}'
+            return jsonify(return_data), 500
 
         if id_data:
+            return_data['data_found'] = True
             return_data['message'] = 'ID verification successful.'
             return_data['data'] = id_data
         else:
