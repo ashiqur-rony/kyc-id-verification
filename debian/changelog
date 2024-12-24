@@ -1,3 +1,10 @@
+id-verification (0.9.5) bookworm; urgency=medium
+
+  * Change move command to prevent running two times
+  * Create key file
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Tue, 24 Dec 2024 14:32:16 +0100
+
 id-verification (0.9.4) bookworm; urgency=high
 
   * Updated success and failure messages.
