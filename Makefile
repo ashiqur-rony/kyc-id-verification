@@ -15,7 +15,7 @@ ${STATIC}/${PROJECT}/venv:
 install: ${STATIC}/${PROJECT}/venv
 	mv ${STATIC}/${PROJECT}/venv $(DESTDIR)/${STATIC}/${PROJECT}
 	mkdir -p $(DESTDIR)/${STATIC}/${PROJECT}
-	cp -a frontend lib logs wsgi.py app.py $(DESTDIR)/${STATIC}/${PROJECT}
+	cp -a frontend lib wsgi.py app.py $(DESTDIR)/${STATIC}/${PROJECT}
 	mkdir -p $(DESTDIR)/etc/${PROJECT}
 	cp .env-dist $(DESTDIR)/etc/${PROJECT}/${PROJECT}.conf
 	cp frontend/resources/js/key.js-dist $(DESTDIR)/etc/${PROJECT}/key.js
