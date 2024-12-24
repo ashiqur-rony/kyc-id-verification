@@ -1,3 +1,31 @@
+id-verification (0.9.4) bookworm; urgency=high
+
+  * Updated success and failure messages.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Tue, 24 Dec 2024 06:41:30 -0600
+
+id-verification (0.9.3) bookworm; urgency=high
+
+  * Created separated key file for JavaScript.
+  * Added option to choose data reading method in the frontend.
+  * Created separate modules for data reading libraries.
+  * Streamlined the response JSON format.
+  * Implemented `Mindee` API for ID reading.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Tue, 24 Dec 2024 06:26:30 -0600
+
+id-verification (0.9.2) bookworm; urgency=high
+
+  * Fixed bug in reading API key from file.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 02 Dec 2024 01:55:30 -0600
+
+id-verification (0.9.1) bookworm; urgency=medium
+
+  * Added API key based verification.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 02 Dec 2024 01:45:30 -0600
+
 id-verification (0.9.0) bookworm; urgency=medium
 
   * Initial release.

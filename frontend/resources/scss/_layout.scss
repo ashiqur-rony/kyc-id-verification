@@ -17,14 +17,41 @@
     margin-bottom: 20px;
   }
 
-  .result-content {
+  .result {
     margin-top: 20px;
     padding: 20px;
     border: 1px solid $primary-color;
     border-radius: 0;
-    background: $primary-color;
-    color: $secondary-color;
     font-family: courier-new, courier, monospace;
+
+    &.result-output {
+      font-weight: bold;
+      color: $white-color;
+
+      &.valid {
+        background: $success-color;
+      }
+
+      &.invalid {
+        background: $danger-color;
+      }
+
+      &.verify {
+        background: $secondary-color;
+      }
+    }
+
+    &.result-data {
+        background: $white-color;
+        color: $black-color;
+    }
+
+    &.result-content {
+      border: 1px solid $primary-color;
+      border-radius: 0;
+      background: $primary-color;
+      color: $secondary-color;
+    }
   }
 }
 
