@@ -28,14 +28,35 @@ html *, body * {
   font-weight: 700;
   margin-bottom: 20px;
 }
-.container .result-content {
+.container .result {
   margin-top: 20px;
   padding: 20px;
   border: 1px solid #2c1666;
   border-radius: 0;
+  font-family: courier-new, courier, monospace;
+}
+.container .result.result-output {
+  font-weight: bold;
+  color: #fff;
+}
+.container .result.result-output.valid {
+  background: #218b38;
+}
+.container .result.result-output.invalid {
+  background: #be2f3e;
+}
+.container .result.result-output.verify {
+  background: #e1974c;
+}
+.container .result.result-data {
+  background: #fff;
+  color: #000;
+}
+.container .result.result-content {
+  border: 1px solid #2c1666;
+  border-radius: 0;
   background: #2c1666;
   color: #e1974c;
-  font-family: courier-new, courier, monospace;
 }
 
 form .form-group {

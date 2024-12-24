@@ -1,5 +1,9 @@
 const form = document.getElementById('verifyForm');
 
+if (!_api_key) {
+    console.log('API key not found');
+}
+
 form.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent default form submission
     document.getElementById('loading').classList.remove('hidden');
@@ -12,7 +16,7 @@ form.addEventListener('submit', (event) => {
         method: 'POST',
         body: formData,
         headers: {
-            'Authorization': 'Bearer MV02ljQJQt0xVDEPLEseQrABHaBilhAF'
+            'Authorization': 'Bearer ' + _api_key
         }
     })
         .then(response => response.text())
@@ -21,20 +25,111 @@ form.addEventListener('submit', (event) => {
             document.getElementById('result').classList.remove('hidden');
             document.getElementById('resultContent').innerHTML = text;
 
+            let id_type = '';
+            let id_number = '';
+            let mrz = '';
+            let contains_dob = false;
+            let valid_govt_id = false;
+            let dob = '';
+            let age = 0;
+
             console.log('Success:', text);
 
             json_msg = JSON.parse(text);
             data = json_msg['data'];
 
+            parsed_data = JSON.parse(data);
+            if (parsed_data.hasOwnProperty('ID Type')) {
+                id_type = parsed_data['ID Type'];
+            }
+            if (parsed_data.hasOwnProperty('ID Number')) {
+                id_number = parsed_data['ID Number'];
+            }
+            if (parsed_data.hasOwnProperty('Machine Readable Zone')) {
+                mrz = parsed_data['Machine Readable Zone'];
+            }
+            if (parsed_data.hasOwnProperty('Contains DOB') && parsed_data['Contains DOB'].toLowerCase() === 'yes') {
+                if (parsed_data.hasOwnProperty('Date of Birth (DOB)') && parsed_data['Date of Birth (DOB)'] !== '') {
+                    dob = parsed_data['Date of Birth (DOB)'];
+                    contains_dob = true;
+                    age = calculateAge(dob);
+                }
+            }
+            if (parsed_data.hasOwnProperty('Valid Govt. ID') && parsed_data['Valid Govt. ID'].toLowerCase() === 'yes') {
+                valid_govt_id = true;
+            }
+
             message = json_msg['message'];
             console.log('Data:', data);
 
             console.log('Message:', message);
+
+            // Display DOB verification result
+            document.getElementById('resultOutput').classList.remove('invalid');
+            document.getElementById('resultOutput').classList.remove('verify');
+            document.getElementById('resultOutput').classList.remove('valid');
+
+            if (contains_dob) {
+
+                if (valid_govt_id && age >= 18) {
+                    document.getElementById('resultOutput').innerHTML = 'Verified age: ' + age + ' years<br>Verified Govt. ID: ' + id_type;
+                    document.getElementById('resultOutput').classList.add('valid');
+                } else if (valid_govt_id && age < 18) {
+                    document.getElementById('resultOutput').innerHTML = 'Verified age: ' + age + ' years<br>Verified Govt. ID: ' + id_type;
+                    document.getElementById('resultOutput').classList.add('invalid');
+                } else if (!valid_govt_id && age >= 18) {
+                    document.getElementById('resultOutput').innerHTML = 'Verified age: ' + age + ' years<br>Invalid Govt. ID: ' + id_type;
+                    document.getElementById('resultOutput').classList.add('verify');
+                } else {
+                    document.getElementById('resultOutput').innerHTML = 'Verified age: ' + age + ' years<br>Invalid Govt. ID: ' + id_type;
+                    document.getElementById('resultOutput').classList.add('invalid');
+                }
+            } else {
+                document.getElementById('resultOutput').innerHTML = 'Date of Birth not found.';
+                document.getElementById('resultOutput').classList.add('invalid');
+            }
+
+            // Display formatted data
+            let formattedHTML = '<ul>';
+            if (id_type !== '') {
+                formattedHTML += '<li>ID Type: ' + id_type + '</li>';
+            }
+            if (id_number !== '') {
+                formattedHTML += '<li>ID Number: ' + id_number + '</li>';
+            }
+            if (mrz !== '') {
+                formattedHTML += '<li>Machine Readable Zone: ' + mrz + '</li>';
+            }
+            if (contains_dob) {
+                formattedHTML += '<li>Date of Birth: ' + dob + '</li>';
+            }
+            if (valid_govt_id) {
+                formattedHTML += '<li>Valid Govt. ID: Yes</li>';
+            } else {
+                formattedHTML += '<li>Valid Govt. ID: No</li>';
+            }
+            formattedHTML += '</ul>';
+            document.getElementById('resultData').innerHTML = formattedHTML;
         })
         .catch(error => {
             document.getElementById('result').classList.remove('hidden');
             document.getElementById('loading').classList.add('hidden');
-            document.getElementById('resultContent').innerHTML = error;
+            // document.getElementById('resultContent').innerHTML = error;
             console.error('Error uploading file:', error);
         });
 });
+
+function calculateAge(dateOfBirth) {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+
+    // Adjust age if birthday hasn't happened yet this year
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age;
+}
