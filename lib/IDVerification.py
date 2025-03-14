@@ -10,11 +10,12 @@ class IDVerification:
     IDVerification class to compare faces in ID images with faces in provided pictures and extract text from ID images.
     """
 
-    def __init__(self, api_key=None):
+    def __init__(self):
         """
         Initialize the IDVerification class with the Gemini API key.
         """
-        self.gemini_api_key = api_key
+        # self.gemini_api_key = api_key
+        pass
 
     def match_id_with_picture(self, id_path, picture_path):
         """

@@ -57,7 +57,7 @@ def verify():
     selfie_image.save(picture_path)
     print(f'Saved selfie image to {picture_path}')
 
-    id_reader = Verify.IDVerification(gemini_api_key)
+    id_reader = Verify.IDVerification()
     try:
         id_match = id_reader.match_id_with_picture(id_path, picture_path)
     except Exception as e:

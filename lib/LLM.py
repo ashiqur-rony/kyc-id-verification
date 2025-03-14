@@ -43,6 +43,7 @@ class LLM:
             "ID Type, Name, Address, Date of Birth (DOB), Expiration Date (EXP), Machine Readable Zone, and any other relevant details. "
             "ID Type can be either of Driving License, Passport, Govt. ID, and Other. "
             "Also include if this is a valid government-issued ID and contains date of birth (DOB). "
+            "Finally, make sure there is no sign of manipulation or forgery in the ID. "
             "Provide the output in a structured JSON format without any backticks. "
             "Example format: "
             "{"
@@ -66,6 +67,7 @@ class LLM:
             "\"Donor\": \"Yes\", "
             "\"Valid Govt. ID\": \"Yes\", "
             "\"Contains DOB\": \"Yes\", "
+            "\"Forged\": \"No\", "
             "\"Machine Readable Zone\": \"<MRZ>\""
             "}"
         )
