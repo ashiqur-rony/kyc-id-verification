@@ -1,3 +1,12 @@
+"""
+This file detects the forgery using Noise and SIFT (#1 of the workflow).
+To run the test, set absolute path of the image in the image_path variable
+at line 110 and run the file.
+We need OpenCV and scikit-learn for the process.
+
+Run the file using the command:
+> python test_forgery.py
+"""
 import sys
 import math
 import numpy as np
@@ -118,7 +127,9 @@ if __name__ == "__main__":
     if forgery is None:
         sys.exit(0)
     cv2.imshow('Original image', forgery_detector.image)
+    cv2.resizeWindow('Original image', 800, 600)
     cv2.imshow('Forgery', forgery)
+    cv2.resizeWindow('Forgery', 800, 600)
     wait_time = 1000
     while(cv2.getWindowProperty('Forgery', 0) >= 0) or (cv2.getWindowProperty('Original image', 0) >= 0):
         keyCode = cv2.waitKey(wait_time)

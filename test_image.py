@@ -1,3 +1,13 @@
+"""
+This file detects the forgery using ELA and a pre-trained model (#2 of the workflow).
+To run the test, set absolute path of the image in the image_path variable
+at line 88 and run the file.
+We need PyTorch for the model. The file also depends on
+lib/ImageModels.py and lib/model/model_im1.pth.
+
+Run the file using the command:
+> python test_image.py
+"""
 import torch
 import numpy as np
 from PIL import Image
@@ -78,9 +88,9 @@ def infer(img_path, model, device):
 
 if __name__ == '__main__':
     # Load the image
-    image_path = r'C:/Work/id-match/source_files/passport/images/2.png'
+    # image_path = r'C:/Work/id-match/source_files/passport/images/2.png'
     # image_path = r'C:/Work/id-match/source_files/id_cards/5.jpg'
-    # image_path = r'C:/Work/id-match/source_files/id_cards/7.png'
+    image_path = r'C:/Work/id-match/source_files/id_cards/7.png'
     # image_path = r'C:/Work/id-match/source_files/id_cards/8.jpg'
     image = Image.open(image_path)
 
