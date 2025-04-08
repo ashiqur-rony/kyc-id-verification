@@ -84,6 +84,7 @@ def infer(img_path, model, device):
 
     print("Prediction:", end=' ')
     print("Authentic" if y_pred else "Tampared")  # auth -> 1 and tp -> 0
+    return 1 if y_pred else 0
 
 
 if __name__ == '__main__':
@@ -99,4 +100,4 @@ if __name__ == '__main__':
     model_path = 'lib/model/model_im1.pth'
     model = torch.load(model_path, map_location=device)
 
-    infer(model=model, img_path=image_path, device=device)
+    level_1_analysis = infer(model=model, img_path=image_path, device=device)

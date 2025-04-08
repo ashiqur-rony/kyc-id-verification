@@ -1,14 +1,13 @@
-#importing libs
+# importing libs
 
 import torch.nn as nn
-
 
 
 # auth -> 1 and tp -> 0
 class IMDModel(nn.Module):
 
     def __init__(self):
-        super(IMDModel,self).__init__()
+        super(IMDModel, self).__init__()
 
         self.maxpool = nn.MaxPool2d(kernel_size=2)
         self.relu = nn.ReLU()
@@ -25,7 +24,7 @@ class IMDModel(nn.Module):
             self.relu
         )
         self.linear = nn.Sequential(
-            nn.Linear(in_features=16*30*30, out_features=1024),
+            nn.Linear(in_features=16 * 30 * 30, out_features=1024),
             nn.BatchNorm1d(1024),
             self.relu,
             nn.Linear(in_features=1024, out_features=64),
@@ -35,13 +34,11 @@ class IMDModel(nn.Module):
             nn.Softmax()
         )
 
-
     def forward(self, img):
-
         d1 = self.down_conv1(img)
         d2 = self.down_conv2(d1)
 
-        d2 = d2.view(-1, d2.shape[1]*d2.shape[2]*d2.shape[3])
+        d2 = d2.view(-1, d2.shape[1] * d2.shape[2] * d2.shape[3])
         out = self.linear(d2)
 
         return out

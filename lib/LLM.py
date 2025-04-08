@@ -3,13 +3,15 @@ import json
 import os
 import re
 import datetime
+from lib.Logging import Logging, log
+
 
 class LLM:
     def __init__(self, name, id_path, api_key=None):
         self.name = name
         self.id_path = id_path
         self.api_key = api_key
-
+        logging = Logging()
 
     def read_id_data(self):
         if self.name == 'gemini':
@@ -34,7 +36,8 @@ class LLM:
             }
         """
         genai.configure(api_key=self.api_key)
-        model = genai.GenerativeModel('gemini-1.5-flash')
+        # model = genai.GenerativeModel('gemini-1.5-flash')
+        model = genai.GenerativeModel('gemini-2.0-flash')
         file = genai.upload_file(self.id_path)
 
         prompt = (
@@ -43,7 +46,7 @@ class LLM:
             "ID Type, Name, Address, Date of Birth (DOB), Expiration Date (EXP), Machine Readable Zone, and any other relevant details. "
             "ID Type can be either of Driving License, Passport, Govt. ID, and Other. "
             "Also include if this is a valid government-issued ID and contains date of birth (DOB). "
-            "Finally, make sure there is no sign of manipulation or forgery in the ID. "
+            "Finally, document can contain signs of manipulation or forgery. Often forged documents have obvious marks like font mismatch or color imbalance. Look for signs of forgery and report whether it is forged or not. "
             "Provide the output in a structured JSON format without any backticks. "
             "Example format: "
             "{"
@@ -90,16 +93,4 @@ class LLM:
         return cleaned_text
 
     def __log(self, message, print_console=False):
-        """
-        Log the message to the console.
-        :param message: string message to log
-        """
-        if not os.path.exists(os.path.join(os.getcwd(), 'logs')):
-            os.makedirs('logs', exist_ok=True)
-
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        with open(os.path.join('logs', f'id_verification_{current_date}.log'), 'a') as log_file:
-            log_file.write(f'{datetime.datetime.now()} - {message}\n')
-
-        if print_console:
-            print(message)
+        log(message, print_console)  # Use the log function from the Logging module

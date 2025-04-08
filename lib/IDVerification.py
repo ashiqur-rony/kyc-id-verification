@@ -3,6 +3,7 @@ import os
 import json
 import re
 import datetime
+from lib.Logging import Logging, log
 
 
 class IDVerification:
@@ -15,7 +16,7 @@ class IDVerification:
         Initialize the IDVerification class with the Gemini API key.
         """
         # self.gemini_api_key = api_key
-        pass
+        logging = Logging()
 
     def match_id_with_picture(self, id_path, picture_path):
         """
@@ -52,12 +53,4 @@ class IDVerification:
         Log the message to the console.
         :param message: string message to log
         """
-        if not os.path.exists(os.path.join(os.getcwd(), 'logs')):
-            os.makedirs('logs', exist_ok=True)
-
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        with open(os.path.join('logs', f'id_verification_{current_date}.log'), 'a') as log_file:
-            log_file.write(f'{datetime.datetime.now()} - {message}\n')
-
-        if print_console:
-            print(message)
+        log(message, print_console)  # Use the log function from the Logging module

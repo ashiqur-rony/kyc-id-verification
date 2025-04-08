@@ -40,8 +40,48 @@ class DetectForgery(object):
         return sift_image
 
     def locateForgery(self, eps=40, min_sample=2):
-        clusters = DBSCAN(eps=eps, min_samples=min_sample).fit(
+        # clusters = DBSCAN(eps=eps, min_samples=min_sample).fit(
+        #     self.descriptors)
+        print('descriptor shape:', self.descriptors.shape)
+        print('key points shape:', len(self.key_points))
+        clusters = DBSCAN(eps=120, min_samples=2).fit(
             self.descriptors)
+        print('clusters:', clusters)
+        print('cluster labels:', set(clusters.labels_))
+        print('total clusters:', len(set(clusters.labels_)))
+
+        number_of_clusters = len(set(clusters.labels_))
+        number_of_keypoints = len(self.key_points)
+
+
+        forgery = self.image.copy()
+        anomaly_count = 0
+        for idx in range(len(self.key_points)):
+            if clusters.labels_[idx] == -1:
+                anomaly_count += 1
+                cv2.circle(forgery, (int(self.key_points[idx].pt[0]), int(self.key_points[idx].pt[1])),
+                           3, (0, 0, 255), -1)
+        # cv2.imshow('SIFT Keypoints', self.image)
+        print('Anomaly count:', anomaly_count, 'out of', len(self.key_points))
+
+        anomalous_ratio = anomaly_count / (number_of_keypoints * (number_of_clusters - 1 + 1e-8))
+        non_anomalous_cluster_ratio = (number_of_clusters - 1) / (number_of_keypoints - anomaly_count + 1e-8)
+
+        possible_forgery = anomalous_ratio / non_anomalous_cluster_ratio
+
+        print('Anomalous ratio:', anomalous_ratio)
+        print('Non-anomalous ratio:', non_anomalous_cluster_ratio)
+
+        if possible_forgery > 0.25:
+            print('Forgery score:', possible_forgery)
+            print('Forgery Found!!')
+        else:
+            print('Forgery score:', possible_forgery)
+            print('No Forgery Found!!')
+
+        return forgery
+
+        exit()
         size = np.unique(clusters.labels_).shape[0] - 1
         forgery = self.image.copy()
         if (size == 0) and (np.unique(clusters.labels_)[0] == -1):
