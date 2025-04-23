@@ -5,12 +5,17 @@ import os
 import lib.IDVerification as Verify
 import lib.LLM as llm
 import lib.Mindee as mnd
+import lib.Forgery as forgery
+from lib.Logging import Logging, log
+from lib.ImageModels import IMDModel
 from flask import request
 from dotenv import load_dotenv
 import time
 
 app = Flask(__name__)
 CORS(app)
+
+logging = Logging()
 
 load_dotenv()
 gemini_api_key = os.getenv('GEMINI_API_KEY')
@@ -57,7 +62,17 @@ def verify():
     selfie_image.save(picture_path)
     print(f'Saved selfie image to {picture_path}')
 
-    id_reader = Verify.IDVerification(gemini_api_key)
+    # Check if the ID is tampered
+    forgery_detector = forgery.Forgery(id_path)
+    check_for_tampering = forgery_detector.detect()
+    if check_for_tampering:
+        # Delete the ID and selfie images before returning the error
+        os.remove(id_path)
+        os.remove(picture_path)
+        return jsonify({'message': 'ID is tampered or forged.'}), 400
+
+
+    id_reader = Verify.IDVerification()
     try:
         id_match = id_reader.match_id_with_picture(id_path, picture_path)
     except Exception as e:

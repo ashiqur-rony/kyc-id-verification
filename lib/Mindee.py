@@ -8,12 +8,14 @@ import json
 import os
 import re
 import datetime
+from lib.Logging import Logging, log
 
 
 class Mindee:
     def __init__(self, id_path, api_key=None):
         self.id_path = id_path
         self.api_key = api_key
+        logging = Logging()
 
     def read_id_data(self):
         return self.read_id_data_with_mindee()
@@ -76,12 +78,4 @@ class Mindee:
         Log the message to the console.
         :param message: string message to log
         """
-        if not os.path.exists(os.path.join(os.getcwd(), 'logs')):
-            os.makedirs('logs', exist_ok=True)
-
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        with open(os.path.join('logs', f'id_verification_{current_date}.log'), 'a') as log_file:
-            log_file.write(f'{datetime.datetime.now()} - {message}\n')
-
-        if print_console:
-            print(message)
+        log(message, print_console)  # Use the log function from the Logging module

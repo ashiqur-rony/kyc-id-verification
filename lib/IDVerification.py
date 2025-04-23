@@ -3,6 +3,7 @@ import os
 import json
 import re
 import datetime
+from lib.Logging import Logging, log
 
 
 class IDVerification:
@@ -10,11 +11,12 @@ class IDVerification:
     IDVerification class to compare faces in ID images with faces in provided pictures and extract text from ID images.
     """
 
-    def __init__(self, api_key=None):
+    def __init__(self):
         """
         Initialize the IDVerification class with the Gemini API key.
         """
-        self.gemini_api_key = api_key
+        # self.gemini_api_key = api_key
+        logging = Logging()
 
     def match_id_with_picture(self, id_path, picture_path):
         """
@@ -51,12 +53,4 @@ class IDVerification:
         Log the message to the console.
         :param message: string message to log
         """
-        if not os.path.exists(os.path.join(os.getcwd(), 'logs')):
-            os.makedirs('logs', exist_ok=True)
-
-        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-        with open(os.path.join('logs', f'id_verification_{current_date}.log'), 'a') as log_file:
-            log_file.write(f'{datetime.datetime.now()} - {message}\n')
-
-        if print_console:
-            print(message)
+        log(message, print_console)  # Use the log function from the Logging module
