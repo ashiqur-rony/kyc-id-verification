@@ -1,3 +1,18 @@
+id-verification (0.9.6) bookworm; urgency=medium
+
+  [ Olivier Bitsch ]
+  * Remove deleted logs folder from build
+
+  [ Ashiqur Rahman ]
+  * Implemented model to verify image manipulation.
+  * Implemented function to test forgery in document.
+  * Image forgery detection with noise level and sift.
+  * Integrated the forgery detection methods into the Forgery class.
+  * Exported requirements file.
+  * Exported requirements file from conda.
+
+ -- Olivier Bitsch <olivier.b@iabsis.com>  Thu, 24 Apr 2025 09:32:39 +0200
+
 id-verification (0.9.5) bookworm; urgency=medium
 
   * Change move command to prevent running two times
