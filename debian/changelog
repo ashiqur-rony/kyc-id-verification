@@ -1,3 +1,10 @@
+id-verification (0.9.7) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Added SciPy and scikit-learn to requirements.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Tue, 06 May 2025 08:48:00 -0600
+
 id-verification (0.9.6) bookworm; urgency=medium
 
   [ Olivier Bitsch ]
