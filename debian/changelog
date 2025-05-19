@@ -1,3 +1,11 @@
+id-verification (0.9.9) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Implemented the latest trained model.
+  * Updated the forgery calculation method.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Tue, 19 May 2025 07:44:00 -0600
+
 id-verification (0.9.8) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]

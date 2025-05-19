@@ -1,11 +1,12 @@
 import os
+import io
 import torch
 import numpy as np
 from PIL import Image
 from PIL import ImageChops
 from PIL import ImageEnhance
 from PIL.ExifTags import TAGS
-from lib.ImageModels import IMDModel
+from lib.ImageManipulation import ImageTamperingDetection
 import sys
 import math
 
@@ -31,15 +32,14 @@ class Forgery:
         Detect forgery in the image using level 1 and level 2 tests.
         Level 1 test performs ELA and metadata analysis. Then runs the ELA through a pretrained model to detect forgery.
         Level 2 test performs noise detection and SIFT analysis.
-        Finally, we combine the results of both tests giving 25% weight to level 1 and 75% to level 2.
+        Finally, we combine the results of both tests giving 40% weight to level 1 and 60% to level 2.
         :return: boolean indicating if forgery is detected
         """
         level_1_score = 1 if self.level_1_test() else 0
         level_2_score = self.level_2_test()
-        forgery_score = level_1_score * .25 + level_2_score * .75
+        forgery_score = level_1_score * .40 + level_2_score * .60
         log(f'Forgery score: {forgery_score}', print_console=True)
         return forgery_score > 0.5
-
 
     def level_1_test(self):
         ela_test = ELATest(self.image)
@@ -53,7 +53,7 @@ class Forgery:
     def level_2_test(self):
         noise_detector = DetectNoise(self.image)
         noise_forgery = noise_detector.detect()
-        if(noise_forgery):
+        if (noise_forgery):
             log(f'Level 2 analysis detected noise variance inconsistency', print_console=True)
         else:
             log(f'Level 2 analysis did not detect noise variance inconsistency', print_console=True)
@@ -70,19 +70,26 @@ class Forgery:
         return (0.25 if noise_forgery else 0) + (0.75 if forgery > 0.25 else 0)
 
 
-
 class ELATest:
     def __init__(self, image_path):
         self.image_path = image_path
         self.image = Image.open(self.image_path)
-        self.model_path = 'lib/model/model_im1.pth'
+        self.model_path = 'lib/model/model_forgery.pth'
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        self.model = torch.load(self.model_path).to(self.device)
+
+        self.model = ImageTamperingDetection().to(self.device)
+        self.model.load_state_dict(torch.load(self.model_path, weights_only=True))
+
         # self.model = IMDModel()
         # self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))
         # self.model.to(self.device)
 
     def find_metadata(self):
+        """
+        Check for metadata in the image. If found, check for software traces.
+        Software trace is a sign of forgery.
+        :return: Boolean indicating if metadata is found. 0 if not found, 1 if found.
+        """
         flag = 0
         try:
             info = self.image._getexif()
@@ -96,50 +103,82 @@ class ELATest:
         except Exception as e:
             log(f'Failed to load metadata: {e}', print_console=True)
 
-    def perform_ela(self):
-        DIR = "temp/"
-        TEMP = DIR + "temp.jpg"
-        original = self.image.copy()
+        return flag
+
+    def get_ela_diff(self, img):
+        """
+        Get the ELA difference between the original and compressed image.
+        :param img: PIL Image object
+        :return: ELA difference as a PIL Image object
+        """
+
+        original = img.copy()
 
         if original.mode != 'RGB':
             original = original.convert('RGB')
 
-        if (os.path.isdir(DIR) == False):
-            os.mkdir(DIR)
-        original.save(TEMP, quality=90)
-        temporary = Image.open(TEMP)
-        diff = ImageChops.difference(original, temporary)
+        buffered = io.BytesIO()
+        original.save(buffered, format='JPEG', quality=90)
+        compressed = Image.open(buffered)
+
+        diff = ImageChops.difference(original, compressed)
 
         extrema = diff.getextrema()
         max_diff = max([ex[1] for ex in extrema])
-        SCALE = 255.0 / max_diff
+        scale = 255.0 / max_diff
 
-        diff = ImageEnhance.Brightness(diff).enhance(SCALE)
+        diff = ImageEnhance.Brightness(diff).enhance(scale)
 
-        # d = diff.load()
-        # WIDTH, HEIGHT = diff.size
-        # for x in range(WIDTH):
-        #     for y in range(HEIGHT):
-        #         d[x, y] = tuple(k * SCALE for k in d[x, y])
+        return diff
 
-        diff.save(DIR + "ela_img.jpg")
+    def prepare_image(self):
+        """
+        Preprocess the image for the model.
+        :return: Torch tensor of the preprocessed image
+        """
+
+        # Resize
+        img = self.image.resize((256, 256))
+        # Get ELA of the image
+        image = self.get_ela_diff(img)
+        # Convert WxHxC to CxWxH
+        image_array = np.array(img, dtype=np.float32).transpose(2, 0, 1)
+
+        return torch.from_numpy(image_array)
+
+    def predict_forgery(self, image_tensor):
+        """
+        Predict if the image is forged or not.
+        :param image_tensor: Torch tensor of the ELA difference image
+        :return: Boolean whether the image is authentic or forged (1=authentic, 0=forged)
+        """
+        image = image_tensor.to(self.device)
+        output = self.model(image)
+        probabilities = torch.sigmoid(output)
+        return (probabilities == 1.0).float()
+        # return (probabilities > 0.5).float() # Convert boolean to float (1.0 or 0.0)
 
     def infer(self):
+        """
+        Infer whether the image is forged or not using the trained model. Return True if forged, False otherwise.
+        :return: Boolean indicating if the image is forged
+        """
         log('Performing metadata analysis...', print_console=True)
-        self.find_metadata()
+        metadata = self.find_metadata()
+        log(f'Metadata analysis result: {metadata}', print_console=True)
 
         log('Performing ELA analysis...', print_console=True)
-        self.perform_ela()
+        image_tensor = self.prepare_image()
 
-        img = Image.open("temp/ela_img.jpg")
-        img = img.resize((128, 128))
-        img = np.array(img, dtype=np.float32).transpose(2, 0, 1) / 255.0
-        img = np.expand_dims(img, axis=0)
+        forgery = self.predict_forgery(image_tensor)
+        log(f'Output of the model: {forgery.imte()}', print_console=True)
 
-        out = self.model(torch.from_numpy(img).to(device=self.device))
-        y_pred = torch.max(out, dim=1)[1]
-        log(f'Level 1 analysis result: {y_pred}', print_console=True)
-        return True if y_pred else False
+        # Check if the image is forged or not
+        forged = 0 if forgery.item() else 1
+
+        prediction = metadata * 0.5 + forged * 0.5
+
+        return True if prediction > 0.5 else False
 
 
 class SIFTTest():
