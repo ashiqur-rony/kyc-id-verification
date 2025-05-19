@@ -1,3 +1,10 @@
+id-verification (0.9.10) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Updated the API path in JS file.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Tue, 19 May 2025 07:48:00 -0600
+
 id-verification (0.9.9) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
