@@ -13,3 +13,8 @@ The frontend is built with HTML/JS and can be found in the `frontend` directory.
 3. Upload an image of your ID card and a selfie.
 4. Click the `Verify` button to verify the ID.
 5. The result will be displayed on the page.
+
+## Deployment
+Check for the build status at: https://builder.iabsis.com/build/.  
+Once the build is successful, to build debian package, run `apt update` and then `apt install id-verification` from command line.
+Once build is successful, the APP will be deployed to the server at https://id-verification.dev.oniabsis.com/.
