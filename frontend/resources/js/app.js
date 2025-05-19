@@ -12,7 +12,7 @@ form.addEventListener('submit', (event) => {
 
     const formData = new FormData(form);
 
-    fetch('http://localhost:5000/api/v1/verify', {
+    fetch('/api/v1/verify', {
         method: 'POST',
         body: formData,
         headers: {
