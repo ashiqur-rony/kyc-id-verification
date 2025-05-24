@@ -143,7 +143,7 @@ class ELATest:
         # Resize
         img = self.image.resize((256, 256))
         # Get ELA of the image
-        image = self.get_ela_diff(img)
+        img = self.get_ela_diff(img)
         # Convert WxHxC to CxWxH
         image_array = np.array(img, dtype=np.float32).transpose(2, 0, 1)
 
@@ -174,7 +174,7 @@ class ELATest:
         image_tensor = self.prepare_image()
 
         forgery = self.predict_forgery(image_tensor)
-        log(f'Output of the model: {forgery.imte()}', print_console=True)
+        log(f'Output of the model: {forgery.item()}', print_console=True)
 
         # Check if the image is forged or not
         forged = 0 if forgery.item() else 1

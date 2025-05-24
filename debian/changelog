@@ -1,9 +1,9 @@
-id-verification (0.9.11) bookworm; urgency=medium
+id-verification (0.9.12) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
-  * Added the scripted version of the trained model.
+  * Updated ELA conversion during image processing and fixed typo.
 
- -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Sat, 24 May 2025 04:39:00 -0600
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Sat, 24 May 2025 05:30:00 -0600
 
 id-verification (0.9.10) bookworm; urgency=medium
 
