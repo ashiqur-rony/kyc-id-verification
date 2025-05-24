@@ -18,3 +18,9 @@ The frontend is built with HTML/JS and can be found in the `frontend` directory.
 Check for the build status at: https://builder.iabsis.com/build/.  
 Once the build is successful, to build debian package, run `apt update` and then `apt install id-verification` from command line.
 Once build is successful, the APP will be deployed to the server at https://id-verification.dev.oniabsis.com/.
+
+#### Debug
+To check the debug prints on the console runt this command:  
+```
+journalctl -f -n 200 -u id-verification
+```

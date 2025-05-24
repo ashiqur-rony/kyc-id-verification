@@ -74,11 +74,14 @@ class ELATest:
     def __init__(self, image_path):
         self.image_path = image_path
         self.image = Image.open(self.image_path)
-        self.model_path = 'lib/model/model_forgery.pth'
+        self.model_path = 'lib/model/model_scripted.pth'
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-        self.model = ImageTamperingDetection().to(self.device)
-        self.model.load_state_dict(torch.load(self.model_path, weights_only=True))
+        # self.model = ImageTamperingDetection().to(self.device)
+        # self.model.load_state_dict(torch.load(self.model_path, weights_only=False))
+
+        # Load the scripted model
+        self.model = torch.jit.load(self.model_path, map_location=self.device)
 
         # self.model = IMDModel()
         # self.model.load_state_dict(torch.load(self.model_path, map_location=self.device))

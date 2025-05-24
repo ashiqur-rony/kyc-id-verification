@@ -1,4 +1,6 @@
-### model_im1.pth
-Source: https://github.com/z1311/Image-Manipulation-Detection
 ### model_forgery.pth
-Source: https://www.kaggle.com/code/ghumkumar/image-manipulation-detection-model
+Forgery detection model trained on the CASIA v2.0 dataset.  
+Source: https://www.kaggle.com/datasets/ghumkumar/model-trained-with-casia-2-0-images
+### model_scripted.pth
+Scripted version of the model for deployment.  
+Source: https://www.kaggle.com/datasets/ghumkumar/model-trained-with-casia-2-0-images
