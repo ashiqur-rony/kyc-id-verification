@@ -1,3 +1,10 @@
+id-verification (0.9.14) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Fixed attribute error.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Sun, 25 May 2025 02:52:00 -0600
+
 id-verification (0.9.13) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]

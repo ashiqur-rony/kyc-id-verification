@@ -166,7 +166,7 @@ class ELATest:
         probabilities = torch.sigmoid(output)
         log(f'Probabilities: {probabilities.item()}', print_console=True)
         # probabilities == 1 means authentic, and < 1 means forged
-        return (probabilities.item() == 1.0).float()
+        return probabilities.item() == 1.0
         # return (probabilities > 0.5).float() # Convert boolean to float (1.0 or 0.0)
 
     def infer(self):
