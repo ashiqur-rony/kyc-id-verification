@@ -28,7 +28,7 @@ class LLM:
               "Name": "BERTHIER",
               "FirstName": "CORINNE",
               "Address": "PARIS 1ER (75)",
-              "Date of Birth (DOB)": "06.12.1965",
+              "Date of Birth (DOB)": "06/12/1965",
               "National ID Number": "880692310285",
               "Sex": "F",
               "Height": "1M70",
@@ -44,6 +44,7 @@ class LLM:
             "Please extract and parse the text from the ID card image. "
             "Ensure the extracted information is formatted for database entry with the following fields: "
             "ID Type, Name, Address, Date of Birth (DOB), Expiration Date (EXP), Machine Readable Zone, and any other relevant details. "
+            "Make sure the dates are in the format DD/MM/YYYY. "
             "ID Type can be either of Driving License, Passport, Govt. ID, and Other. "
             "Also include if this is a valid government-issued ID and contains date of birth (DOB). "
             "Finally, document can contain signs of manipulation or forgery. Often forged documents have obvious marks like font mismatch or color imbalance. Look for signs of forgery and report whether it is forged or not. "
@@ -53,8 +54,8 @@ class LLM:
             "\"ID Type\": \"Driving License\", "
             "\"Name\": \"John Doe\", "
             "\"Address\": \"123 Main St, Any town, USA\", "
-            "\"Date of Birth (DOB)\": \"01/01/1970\", "
-            "\"Expiration Date (EXP)\": \"01/01/2030\", "
+            "\"Date of Birth (DOB)\": \"30/12/1970\", "
+            "\"Expiration Date (EXP)\": \"30/12/2030\", "
             "\"Driver's License Number\": \"D1234567\", "
             "\"Passport Number\": \"D1234567\", "
             "\"ID Number\": \"D1234567\", "

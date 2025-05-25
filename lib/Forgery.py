@@ -35,10 +35,15 @@ class Forgery:
         Finally, we combine the results of both tests giving 40% weight to level 1 and 60% to level 2.
         :return: boolean indicating if forgery is detected
         """
-        level_1_score = 1 if self.level_1_test() else 0
+        level_1_score = self.level_1_test()
         level_2_score = self.level_2_test()
-        forgery_score = level_1_score * .40 + level_2_score * .60
+        log(f'Level 1 score: {level_1_score}', print_console=True)
+        log(f'Level 2 score: {level_2_score}', print_console=True)
+        # Give equal weight to both detection techniques.
+        forgery_score = level_1_score * .50 + level_2_score * .50
         log(f'Forgery score: {forgery_score}', print_console=True)
+        # If forgery score is greater than 0.5, we consider it as forgery
+        # Return True if forgery is detected, False otherwise
         return forgery_score > 0.5
 
     def level_1_test(self):
@@ -67,6 +72,7 @@ class Forgery:
         else:
             log(f'Level 2 analysis did not detect forgery with score of {forgery}', print_console=True)
 
+        # Give 25% weight to noise detection and 75% weight to SIFT (clustering based) forgery score
         return (0.25 if noise_forgery else 0) + (0.75 if forgery > 0.25 else 0)
 
 
@@ -95,7 +101,7 @@ class ELATest:
         """
         flag = 0
         try:
-            info = self.image._getexif()
+            info = self.image.getexif()
             for (tag, value) in info.items():
                 if "Software" == TAGS.get(tag, tag):  # checking for software traces
                     log(f'Software Signature: {value}', print_console=True)
@@ -158,7 +164,9 @@ class ELATest:
         image = image_tensor.to(self.device)
         output = self.model(image)
         probabilities = torch.sigmoid(output)
-        return (probabilities == 1.0).float()
+        log(f'Probabilities: {probabilities.item()}', print_console=True)
+        # probabilities == 1 means authentic, and < 1 means forged
+        return (probabilities.item() == 1.0).float()
         # return (probabilities > 0.5).float() # Convert boolean to float (1.0 or 0.0)
 
     def infer(self):
@@ -174,12 +182,17 @@ class ELATest:
         image_tensor = self.prepare_image()
 
         forgery = self.predict_forgery(image_tensor)
-        log(f'Output of the model: {forgery.item()}', print_console=True)
+        log(f'Output of the model: {forgery}', print_console=True)
 
         # Check if the image is forged or not
-        forged = 0 if forgery.item() else 1
+        # forgery == 1 means authentic, and 0 means forged
+        # We want to return True if the image is forged, so we invert the value
+        forged = 0 if forgery else 1
 
-        prediction = metadata * 0.5 + forged * 0.5
+        # Give 25% weight to software signature and
+        # 75% weight to model output
+        prediction = metadata * 0.25 + forged * 0.75
+        log(f'Final prediction: {prediction}', print_console=True)
 
         return True if prediction > 0.5 else False
 
