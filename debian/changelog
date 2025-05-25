@@ -1,3 +1,10 @@
+id-verification (0.9.16) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Updated the forgery score threshold to 0.5.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Sun, 25 May 2025 05:06:00 -0600
+
 id-verification (0.9.15) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
