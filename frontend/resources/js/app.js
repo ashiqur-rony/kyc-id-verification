@@ -37,7 +37,7 @@ form.addEventListener('submit', (event) => {
 
             json_msg = JSON.parse(text);
 
-            if(json_msg['data_found']) {
+            if (json_msg['data_found']) {
 
                 data = json_msg['data'];
 
@@ -113,9 +113,16 @@ form.addEventListener('submit', (event) => {
                 }
                 formattedHTML += '</ul>';
                 document.getElementById('resultData').innerHTML = formattedHTML;
-            } else if(json_msg['face_match']) {
+            } else if (json_msg['face_match']) {
                 document.getElementById('resultOutput').innerHTML = 'Face matched with ID photo.<br>Could not verify age.';
                 document.getElementById('resultOutput').classList.add('verify');
+            } else if (parseInt(json_msg['code']) < 4) {
+                let message = 'Error occurred with the ID validation with error code: ' + json_msg['code'] + '.<br>Please try again later.';
+                if (json_msg['message']) {
+                    message = json_msg['message'];
+                }
+                document.getElementById('resultOutput').innerHTML = message;
+                document.getElementById('resultOutput').classList.add('invalid');
             } else {
                 document.getElementById('resultOutput').innerHTML = 'Face did not match the ID photo.<br>No data parsed.';
                 document.getElementById('resultOutput').classList.add('invalid');

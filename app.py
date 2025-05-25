@@ -52,7 +52,7 @@ def verify():
         os.makedirs('uploads', exist_ok=True)
 
     if not id_image or not selfie_image:
-        return jsonify({'message': 'Please provide both picture of ID and a picture to compare.'}), 400
+        return jsonify({'code': 0, 'message': 'Please provide both picture of ID and a picture to compare.'}), 400
 
     id_path = f'{app.config["UPLOAD_FOLDER"]}/id_{time.time_ns()}_{id_image.filename}'
     picture_path = f'{app.config["UPLOAD_FOLDER"]}/selfie_{time.time_ns()}_{selfie_image.filename}'
@@ -69,7 +69,7 @@ def verify():
         # Delete the ID and selfie images before returning the error
         os.remove(id_path)
         os.remove(picture_path)
-        return jsonify({'message': 'ID is tampered or forged.'}), 400
+        return jsonify({'code': 1, 'message': 'ID is tampered or forged.'}), 400
 
 
     id_reader = Verify.IDVerification()
@@ -79,9 +79,11 @@ def verify():
         # Delete the ID and selfie images before returning the error
         os.remove(id_path)
         os.remove(picture_path)
-        return jsonify({'message': f'Error: {str(e)}'}), 500
+        return jsonify({'code': 3, 'message': f'Error: {str(e)}'}), 500
 
     return_data = {
+        'code': 4,
+        'forged': check_for_tampering,
         'face_match': False,
         'data_found': False,
     }
@@ -104,13 +106,16 @@ def verify():
             return jsonify(return_data), 500
 
         if id_data:
+            return_data['code'] = 4
             return_data['data_found'] = True
             return_data['message'] = 'ID verification successful.'
             return_data['data'] = id_data
         else:
+            return_data['code'] = 5
             return_data['message'] = 'ID matched the image.'
             return_data['data'] = 'No data found.'
     else:
+        return_data['code'] = 6
         return_data['message'] = 'ID verification failed.'
         return_data['data'] = 'No data found.'
 
