@@ -101,7 +101,7 @@ form.addEventListener('submit', (event) => {
                     formattedHTML += '<li>ID Number: ' + id_number + '</li>';
                 }
                 if (mrz !== '') {
-                    formattedHTML += '<li>Machine Readable Zone: ' + mrz + '</li>';
+                    formattedHTML += '<li>Machine Readable Zone: ' + htmlEncode(mrz) + '</li>';
                 }
                 if (contains_dob) {
                     formattedHTML += '<li>Date of Birth: ' + dob + '</li>';
@@ -142,4 +142,14 @@ function calculateAge(dateOfBirth) {
     }
 
     return age;
+}
+
+function htmlEncode(str) {
+    // Replace < with &lt;
+    str = str.replace(/</g, "&lt;");
+    // Replace > with &gt;
+    str = str.replace(/>/g, "&gt;");
+    // Replace & with &amp;
+    str = str.replace(/&/g, "&amp;");
+    return str;
 }

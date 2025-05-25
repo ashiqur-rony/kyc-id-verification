@@ -1,3 +1,10 @@
+id-verification (0.9.13) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Updated model scoring and logs.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Sun, 25 May 2025 02:19:00 -0600
+
 id-verification (0.9.12) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
