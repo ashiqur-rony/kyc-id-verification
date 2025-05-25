@@ -44,7 +44,7 @@ class Forgery:
         log(f'Forgery score: {forgery_score}', print_console=True)
         # If forgery score is greater than 0.5, we consider it as forgery
         # Return True if forgery is detected, False otherwise
-        return forgery_score > 0.5
+        return forgery_score >= 0.5
 
     def level_1_test(self):
         ela_test = ELATest(self.image)
