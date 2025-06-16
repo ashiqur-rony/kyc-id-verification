@@ -44,12 +44,12 @@ class Forgery:
         log(f'Forgery score: {forgery_score}', print_console=True)
         # If forgery score is greater than 0.5, we consider it as forgery
         # Return True if forgery is detected, False otherwise
-        return forgery_score >= 0.5
+        return forgery_score < 1
 
     def level_1_test(self):
         ela_test = ELATest(self.image)
         level_1_analysis = ela_test.infer()
-        if level_1_analysis:
+        if level_1_analysis > 1:
             log(f'Level 1 analysis detected forgery', print_console=True)
         else:
             log(f'Level 1 analysis did not detect forgery', print_console=True)
@@ -68,12 +68,12 @@ class Forgery:
         key_points, descriptors = forgery_detector.sift_detector()
         forgery = forgery_detector.forgery_score(120, 2)
         if forgery > 0.25:
-            log(f'Level 2 analysis detected forgery with score of {forgery}', print_console=True)
+            log(f'Level 2 clustering analysis detected forgery with score of {forgery}', print_console=True)
         else:
-            log(f'Level 2 analysis did not detect forgery with score of {forgery}', print_console=True)
+            log(f'Level 2 clustering analysis did not detect forgery with score of {forgery}', print_console=True)
 
-        # Give 25% weight to noise detection and 75% weight to SIFT (clustering based) forgery score
-        return (0.25 if noise_forgery else 0) + (0.75 if forgery > 0.25 else 0)
+        # Get the ceiling of the sum of noise forgery and SIFT forgery score
+        return math.ceil(noise_forgery + forgery)
 
 
 class ELATest:
@@ -172,7 +172,7 @@ class ELATest:
     def infer(self):
         """
         Infer whether the image is forged or not using the trained model. Return True if forged, False otherwise.
-        :return: Boolean indicating if the image is forged
+        :return: int a weighted sum of metadata and model output. Total value can be [0, 2].
         """
         log('Performing metadata analysis...', print_console=True)
         metadata = self.find_metadata()
@@ -186,15 +186,11 @@ class ELATest:
 
         # Check if the image is forged or not
         # forgery == 1 means authentic, and 0 means forged
-        # We want to return True if the image is forged, so we invert the value
-        forged = 0 if forgery else 1
-
-        # Give 25% weight to software signature and
-        # 75% weight to model output
-        prediction = metadata * 0.25 + forged * 0.75
+        # We will take the floor of the sum of metadata and forgery to get the final prediction
+        prediction = math.floor(metadata + forgery)
         log(f'Final prediction: {prediction}', print_console=True)
 
-        return True if prediction > 0.5 else False
+        return prediction
 
 
 class SIFTTest():
