@@ -32,15 +32,21 @@ class Forgery:
         Detect forgery in the image using level 1 and level 2 tests.
         Level 1 test performs ELA and metadata analysis. Then runs the ELA through a pretrained model to detect forgery.
         Level 2 test performs noise detection and SIFT analysis.
-        Finally, we combine the results of both tests giving 40% weight to level 1 and 60% to level 2.
-        :return: boolean indicating if forgery is detected
+        Finally, we combine the results of both tests giving to calculate a final score. The score is 1 for REAL and 0 for FORGED.
+        :return: boolean indicating if forgery is detected. True for forged and False for authentic.
         """
-        level_1_score = self.level_1_test()
-        level_2_score = self.level_2_test()
-        log(f'Level 1 score: {level_1_score}', print_console=True)
-        log(f'Level 2 score: {level_2_score}', print_console=True)
-        # Give equal weight to both detection techniques.
-        forgery_score = level_1_score * .50 + level_2_score * .50
+        metadata, forgery_model_score = self.level_1_test()
+        noise_forgery, cluster_forgery_score = self.level_2_test()
+
+        log(f'LEVEL 1: Metadata analysis result: {metadata}', print_console=True)
+        log(f'LEVEL 1: Forgery model score: {forgery_model_score}', print_console=True)
+        log(f'LEVEL 2: Noise forgery detected: {noise_forgery}', print_console=True)
+        log(f'LEVEL 2: Cluster forgery score: {cluster_forgery_score}', print_console=True)
+
+        forgery_score = ((noise_forgery * (0.99 < forgery_model_score < 0.999)) + (
+                (1 - noise_forgery) * (cluster_forgery_score < 0.1 and forgery_model_score > 0.99))) * (
+                                1 - (metadata == 1 and forgery_model_score < 0.99))
+
         log(f'Forgery score: {forgery_score}', print_console=True)
         # If forgery score is greater than 0.5, we consider it as forgery
         # Return True if forgery is detected, False otherwise
@@ -48,12 +54,7 @@ class Forgery:
 
     def level_1_test(self):
         ela_test = ELATest(self.image)
-        level_1_analysis = ela_test.infer()
-        if level_1_analysis > 1:
-            log(f'Level 1 analysis detected forgery', print_console=True)
-        else:
-            log(f'Level 1 analysis did not detect forgery', print_console=True)
-        return level_1_analysis
+        return ela_test.infer()
 
     def level_2_test(self):
         noise_detector = DetectNoise(self.image)
@@ -66,14 +67,10 @@ class Forgery:
         forgery_detector = SIFTTest(self.image)
 
         key_points, descriptors = forgery_detector.sift_detector()
-        forgery = forgery_detector.forgery_score(120, 2)
-        if forgery > 0.25:
-            log(f'Level 2 clustering analysis detected forgery with score of {forgery}', print_console=True)
-        else:
-            log(f'Level 2 clustering analysis did not detect forgery with score of {forgery}', print_console=True)
+        cluster_forgery_score = forgery_detector.forgery_score(120, 2)
 
-        # Get the ceiling of the sum of noise forgery and SIFT forgery score
-        return math.ceil(noise_forgery + forgery)
+        # Return both noise forgery and clustering forgery scores for further calculation
+        return noise_forgery, cluster_forgery_score
 
 
 class ELATest:
@@ -184,13 +181,8 @@ class ELATest:
         forgery = self.predict_forgery(image_tensor)
         log(f'Output of the model: {forgery}', print_console=True)
 
-        # Check if the image is forged or not
-        # forgery == 1 means authentic, and 0 means forged
-        # We will take the floor of the sum of metadata and forgery to get the final prediction
-        prediction = math.floor(metadata + forgery)
-        log(f'Final prediction: {prediction}', print_console=True)
-
-        return prediction
+        # Return both metadata and model output for further calculation
+        return metadata, forgery
 
 
 class SIFTTest():

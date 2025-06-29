@@ -1,7 +1,14 @@
+id-verification (0.9.18) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Updated the forgery detection equation to increase the weight of level 2 analysis.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 29 June 2025 02:42:00 -0600
+
 id-verification (0.9.17) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
-  * Updated the forgery detection equation to reduce strictness of the model
+  * Updated the forgery detection equation to reduce strictness of the model.
 
  -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 16 June 2025 13:41:00 -0600
 
