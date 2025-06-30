@@ -1,3 +1,10 @@
+id-verification (0.9.19) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Updated code to return forgery score.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 30 June 2025 01:36:00 -0600
+
 id-verification (0.9.18) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
