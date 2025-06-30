@@ -156,14 +156,14 @@ class ELATest:
         """
         Predict if the image is forged or not.
         :param image_tensor: Torch tensor of the ELA difference image
-        :return: Boolean whether the image is authentic or forged (1=authentic, 0=forged)
+        :return: float score detecting forgery (1=authentic, 0=forged)
         """
         image = image_tensor.to(self.device)
         output = self.model(image)
         probabilities = torch.sigmoid(output)
         log(f'Probabilities: {probabilities.item()}', print_console=True)
         # probabilities == 1 means authentic, and < 1 means forged
-        return probabilities.item() == 1.0
+        return probabilities.item()
         # return (probabilities > 0.5).float() # Convert boolean to float (1.0 or 0.0)
 
     def infer(self):
