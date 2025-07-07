@@ -1,7 +1,14 @@
+id-verification (0.9.21) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Displayed the scores from different levels of forgery detection in the browser.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 07 July 2025 02:49:00 -0600
+
 id-verification (0.9.20) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
-  * Returned scores from all three levels of forgery detection for debugging.
+  * Returned scores from all four levels of forgery detection for debugging.
 
  -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 07 July 2025 01:58:00 -0600
 
