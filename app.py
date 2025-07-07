@@ -64,12 +64,14 @@ def verify():
 
     # Check if the ID is tampered
     forgery_detector = forgery.Forgery(id_path)
-    check_for_tampering = forgery_detector.detect()
+    check_for_tampering, metadata, forgery_model_score, noise_forgery, cluster_forgery_score = forgery_detector.detect()
     if check_for_tampering:
         # Delete the ID and selfie images before returning the error
         os.remove(id_path)
         os.remove(picture_path)
-        return jsonify({'code': 1, 'message': 'ID is tampered or forged.'}), 400
+        return jsonify({'code': 1, 'message': 'ID is tampered or forged.', 'metadata_score': metadata,
+                        'forgery_model_score': forgery_model_score, 'noise_forgery': noise_forgery,
+                        'cluster_forgery_score': cluster_forgery_score}), 400
 
 
     id_reader = Verify.IDVerification()
@@ -79,13 +81,19 @@ def verify():
         # Delete the ID and selfie images before returning the error
         os.remove(id_path)
         os.remove(picture_path)
-        return jsonify({'code': 3, 'message': f'Error: {str(e)}'}), 500
+        return jsonify({'code': 3, 'message': f'Error: {str(e)}', 'metadata_score': metadata,
+                        'forgery_model_score': forgery_model_score, 'noise_forgery': noise_forgery,
+                        'cluster_forgery_score': cluster_forgery_score}), 500
 
     return_data = {
         'code': 4,
         'forged': check_for_tampering,
         'face_match': False,
         'data_found': False,
+        'metadata_score': metadata,
+        'forgery_model_score': forgery_model_score,
+        'noise_forgery': noise_forgery,
+        'cluster_forgery_score': cluster_forgery_score
     }
 
     if id_match and json.loads(id_match)['match']:
