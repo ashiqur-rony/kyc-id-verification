@@ -23,7 +23,7 @@ form.addEventListener('submit', (event) => {
         .then(text => {
             document.getElementById('loading').classList.add('hidden');
             document.getElementById('result').classList.remove('hidden');
-            document.getElementById('resultContent').innerHTML = text;
+            document.getElementById('resultContent').innerHTML = htmlEncode(text);
 
             let id_type = '';
             let id_number = '';
@@ -36,6 +36,12 @@ form.addEventListener('submit', (event) => {
             console.log('Success:', text);
 
             json_msg = JSON.parse(text);
+
+            let formattedHTML = '<ul>';
+            formattedHTML += '<li>Metadata Score: ' + json_msg['metadata_score'] + '</li>';
+            formattedHTML += '<li>Model Score: ' + json_msg['forgery_model_score'] + '</li>';
+            formattedHTML += '<li>Noise Score: ' + json_msg['noise_forgery'] + '</li>';
+            formattedHTML += '<li>Cluster Score: ' + json_msg['cluster_forgery_score'] + '</li>';
 
             if (json_msg['data_found']) {
 
@@ -93,7 +99,7 @@ form.addEventListener('submit', (event) => {
                 }
 
                 // Display formatted data
-                let formattedHTML = '<ul>';
+
                 if (id_type !== '') {
                     formattedHTML += '<li>ID Type: ' + id_type + '</li>';
                 }
@@ -101,7 +107,7 @@ form.addEventListener('submit', (event) => {
                     formattedHTML += '<li>ID Number: ' + id_number + '</li>';
                 }
                 if (mrz !== '') {
-                    formattedHTML += '<li>Machine Readable Zone: ' + htmlEncode(mrz) + '</li>';
+                    formattedHTML += '<li>Machine Readable Zone: ' + mrz + '</li>';
                 }
                 if (contains_dob) {
                     formattedHTML += '<li>Date of Birth: ' + dob + '</li>';
@@ -111,8 +117,6 @@ form.addEventListener('submit', (event) => {
                 } else {
                     formattedHTML += '<li>Valid Govt. ID: No</li>';
                 }
-                formattedHTML += '</ul>';
-                document.getElementById('resultData').innerHTML = formattedHTML;
             } else if (json_msg['face_match']) {
                 document.getElementById('resultOutput').innerHTML = 'Face matched with ID photo.<br>Could not verify age.';
                 document.getElementById('resultOutput').classList.add('verify');
@@ -127,6 +131,9 @@ form.addEventListener('submit', (event) => {
                 document.getElementById('resultOutput').innerHTML = 'Face did not match the ID photo.<br>No data parsed.';
                 document.getElementById('resultOutput').classList.add('invalid');
             }
+
+            formattedHTML += '</ul>';
+            document.getElementById('resultData').innerHTML = formattedHTML;
         })
         .catch(error => {
             document.getElementById('result').classList.remove('hidden');
