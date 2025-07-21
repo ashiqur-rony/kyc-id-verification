@@ -11,6 +11,7 @@ from lib.ImageModels import IMDModel
 from flask import request
 from dotenv import load_dotenv
 import time
+import shutil
 
 app = Flask(__name__)
 CORS(app)
@@ -21,8 +22,10 @@ load_dotenv()
 gemini_api_key = os.getenv('GEMINI_API_KEY')
 mindee_api_key = os.getenv('MINDEE_API_KEY')
 upload_path = os.getenv('UPLOAD_PATH')
+save_id = os.getenv('SAVE_ID', '0')
 
 app.config['UPLOAD_FOLDER'] = upload_path
+app.config['SAVE_ID'] = int(save_id)
 
 
 @app.route('/')
@@ -66,6 +69,22 @@ def verify():
     forgery_detector = forgery.Forgery(id_path)
     check_for_tampering, metadata, forgery_model_score, noise_forgery, cluster_forgery_score = forgery_detector.detect()
     if check_for_tampering:
+        # Save ID if needed
+        if app.config['SAVE_ID'] == 1:
+            forged_id_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'forged', 'id')
+            forged_selfie_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'forged', 'selfie')
+            if not os.path.exists(forged_id_dir):
+                os.makedirs(forged_id_dir, exist_ok=True)
+
+            if not os.path.exists(forged_selfie_dir):
+                os.makedirs(forged_selfie_dir, exist_ok=True)
+
+            try:
+                shutil.copy(id_path, forged_id_dir)
+                shutil.copy(picture_path, forged_selfie_dir)
+            except Exception as e:
+                log(f'Error saving forged ID or selfie image: {str(e)}', print_console=True)
+
         # Delete the ID and selfie images before returning the error
         os.remove(id_path)
         os.remove(picture_path)
@@ -73,12 +92,27 @@ def verify():
                         'forgery_model_score': forgery_model_score, 'noise_forgery': noise_forgery,
                         'cluster_forgery_score': cluster_forgery_score}), 400
 
+    real_id_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'real', 'id')
+    real_selfie_dir = os.path.join(app.config['UPLOAD_FOLDER'], 'real', 'selfie')
+    # Save ID if needed
+    if app.config['SAVE_ID'] == 1:
+        if not os.path.exists(real_id_dir):
+            os.makedirs(real_id_dir, exist_ok=True)
+
+        if not os.path.exists(real_selfie_dir):
+            os.makedirs(real_selfie_dir, exist_ok=True)
 
     id_reader = Verify.IDVerification()
     try:
         id_match = id_reader.match_id_with_picture(id_path, picture_path)
     except Exception as e:
         # Delete the ID and selfie images before returning the error
+
+        # Save ID if needed
+        if app.config['SAVE_ID'] == 1:
+            shutil.copy(id_path, real_id_dir)
+            shutil.copy(picture_path, real_selfie_dir)
+
         os.remove(id_path)
         os.remove(picture_path)
         return jsonify({'code': 3, 'message': f'Error: {str(e)}', 'metadata_score': metadata,
@@ -107,6 +141,10 @@ def verify():
                 mindee_match = mnd.Mindee(id_path=id_path, api_key=mindee_api_key)
                 id_data = mindee_match.read_id_data()
         except Exception as e:
+            # Save ID if needed
+            if app.config['SAVE_ID'] == 1:
+                shutil.copy(id_path, real_id_dir)
+                shutil.copy(picture_path, real_selfie_dir)
             # Delete the ID and selfie images before returning the error
             os.remove(id_path)
             os.remove(picture_path)
@@ -126,6 +164,11 @@ def verify():
         return_data['code'] = 6
         return_data['message'] = 'ID verification failed.'
         return_data['data'] = 'No data found.'
+
+    # Save ID if needed
+    if app.config['SAVE_ID'] == 1:
+        shutil.copy(id_path, real_id_dir)
+        shutil.copy(picture_path, real_selfie_dir)
 
     # Delete the ID and selfie images after processing
     os.remove(id_path)

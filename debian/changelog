@@ -1,3 +1,11 @@
+id-verification (0.9.22) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Fixed the DOB calculation.
+  * Implemented feature to save the ID image if enabled from environment.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 21 July 2025 15:43:00 -0600
+
 id-verification (0.9.21) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
