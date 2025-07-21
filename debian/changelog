@@ -1,3 +1,10 @@
+id-verification (0.9.23) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Fixed JS error.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 21 July 2025 17:04:00 -0600
+
 id-verification (0.9.22) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]

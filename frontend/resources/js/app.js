@@ -197,11 +197,6 @@ function parseArbitraryDate(dateString) {
         }
     }
 
-    // If the loop completes without returning, no format was matched.
-    resultDiv.innerHTML = `
-                <p class="text-red-400 font-semibold">❌ Parse Failed</p>
-                <p class="text-gray-400 mt-2">The input did not match any of the supported formats or was an invalid date (e.g., Feb 30th).</p>
-            `;
     return null;
 }
 
