@@ -4,6 +4,19 @@ if (!_api_key) {
     console.log('API key not found');
 }
 
+// --- Configuration ---
+// The formats we will attempt to parse, in order of preference.
+// You can add, remove, or reorder formats here.
+// This handles the ambiguity of formats like DD/MM vs MM/DD.
+const SUPPORTED_FORMATS = [
+    'YYYY-MM-DD',
+    'YYYY/MM/DD',
+    'DD/MM/YYYY',
+    'DD-MM-YYYY',
+    'MM-DD-YYYY',
+    'MM/DD/YYYY'
+];
+
 form.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent default form submission
     document.getElementById('loading').classList.remove('hidden');
@@ -106,9 +119,6 @@ form.addEventListener('submit', (event) => {
                 if (id_number !== '') {
                     formattedHTML += '<li>ID Number: ' + id_number + '</li>';
                 }
-                if (mrz !== '') {
-                    formattedHTML += '<li>Machine Readable Zone: ' + mrz + '</li>';
-                }
                 if (contains_dob) {
                     formattedHTML += '<li>Date of Birth: ' + dob + '</li>';
                 }
@@ -145,7 +155,7 @@ form.addEventListener('submit', (event) => {
 
 function calculateAge(dateOfBirth) {
     const today = new Date();
-    const birthDate = new Date(dateOfBirth);
+    const birthDate = parseArbitraryDate(dateOfBirth);
 
     let age = today.getFullYear() - birthDate.getFullYear();
     const monthDiff = today.getMonth() - birthDate.getMonth();
@@ -156,6 +166,74 @@ function calculateAge(dateOfBirth) {
     }
 
     return age;
+}
+
+/**
+ * Tries to parse a date string by attempting a list of supported formats.
+ * @param {string} dateString The string to parse.
+ * @returns {Date|null} A valid Date object or null if parsing fails.
+ */
+function parseArbitraryDate(dateString) {
+    for (const format of SUPPORTED_FORMATS) {
+        const parts = getPartsFromFormat(dateString, format);
+
+        // If parts were successfully extracted for the current format
+        if (parts) {
+            const { year, month, day } = parts;
+
+            // Create a date object. We use Date.UTC to work with dates in a timezone-agnostic way,
+            // preventing issues where the user's local timezone might shift the date.
+            const date = new Date(Date.UTC(year, month - 1, day));
+
+            // --- Validation Step ---
+            // This is crucial. It checks if the created date is valid. For example, if the input was
+            // '2023-02-30', new Date() would create '2023-03-02' (it "rolls over").
+            // This check ensures the day, month, and year haven't changed.
+            if (date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day) {
+                // Success! We found a valid format.
+                console.log('Date matched format:', format);
+                return date;
+            }
+        }
+    }
+
+    // If the loop completes without returning, no format was matched.
+    resultDiv.innerHTML = `
+                <p class="text-red-400 font-semibold">❌ Parse Failed</p>
+                <p class="text-gray-400 mt-2">The input did not match any of the supported formats or was an invalid date (e.g., Feb 30th).</p>
+            `;
+    return null;
+}
+
+/**
+ * A helper function to extract year, month, and day from a string based on a format specifier.
+ * @param {string} dateString The input date string (e.g., "21/07/2024").
+ * @param {string} format The format specifier (e.g., 'DD/MM/YYYY').
+ * @returns {{year: number, month: number, day: number}|null} An object with parts, or null if it doesn't match.
+ */
+function getPartsFromFormat(dateString, format) {
+    // Use a regex to split by a hyphen or a slash.
+    const formatParts = format.split(/[-/]/);
+    const dateParts = dateString.split(/[-/]/);
+
+    // The number of parts must match (e.g., 3 parts for date, 3 for format).
+    if (formatParts.length !== dateParts.length) {
+        return null;
+    }
+
+    const parts = {};
+    for (let i = 0; i < formatParts.length; i++) {
+        // Assign the numeric part to the correct key (year, month, or day)
+        const key = formatParts[i].toLowerCase();
+        parts[key] = parseInt(dateParts[i], 10);
+    }
+
+    // If any part is not a number, the format is incorrect.
+    if (isNaN(parts.year) || isNaN(parts.month) || isNaN(parts.day)) {
+        return null;
+    }
+
+    return { year: parts.year, month: parts.month, day: parts.day };
 }
 
 function htmlEncode(str) {
