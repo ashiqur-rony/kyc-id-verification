@@ -1,3 +1,10 @@
+id-verification (0.9.26) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Fixed JS error in parsing date of birth string.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 23 July 2025 16:49:00 -0600
+
 id-verification (0.9.25) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
