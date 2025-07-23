@@ -1,3 +1,10 @@
+id-verification (0.9.24) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Updated age calculation function.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 23 July 2025 15:12:00 -0600
+
 id-verification (0.9.23) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
