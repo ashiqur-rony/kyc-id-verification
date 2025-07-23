@@ -17,6 +17,13 @@ const SUPPORTED_FORMATS = [
     'MM/DD/YYYY'
 ];
 
+const DATE_KEYS = {
+    'yyyy': 'year',
+    'yy': 'year',
+    'mm': 'month',
+    'dd': 'day'
+}
+
 /**
  * Calculates the age based on a birth date.
  * @param {Date} birthDate - The user's birth date as a JavaScript Date object.
@@ -50,7 +57,7 @@ function parseArbitraryDate(dateString) {
 
         // If parts were successfully extracted for the current format
         if (parts) {
-            const { year, month, day } = parts;
+            const {year, month, day} = parts;
 
             // Create a date object. We use Date.UTC to work with dates in a timezone-agnostic way,
             // preventing issues where the user's local timezone might shift the date.
@@ -91,7 +98,9 @@ function getPartsFromFormat(dateString, format) {
     for (let i = 0; i < formatParts.length; i++) {
         // Assign the numeric part to the correct key (year, month, or day)
         const key = formatParts[i].toLowerCase();
-        parts[key] = parseInt(dateParts[i], 10);
+        if (key.length === dateParts[i].length) {
+            parts[DATE_KEYS[key]] = parseInt(dateParts[i], 10);
+        }
     }
 
     // If any part is not a number, the format is incorrect.
@@ -99,7 +108,7 @@ function getPartsFromFormat(dateString, format) {
         return null;
     }
 
-    return { year: parts.year, month: parts.month, day: parts.day };
+    return {year: parts.year, month: parts.month, day: parts.day};
 }
 
 function htmlEncode(str) {
