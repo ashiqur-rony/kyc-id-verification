@@ -17,6 +17,101 @@ const SUPPORTED_FORMATS = [
     'MM/DD/YYYY'
 ];
 
+/**
+ * Calculates the age based on a birth date.
+ * @param {Date} birthDate - The user's birth date as a JavaScript Date object.
+ * @returns {number} The calculated age in years.
+ */
+function calculateAge(birthDate) {
+    const today = new Date();
+    // We use the UTC values from the parsed date to create a date in the local timezone context for accurate comparison.
+    const birthDateLocal = new Date(birthDate.getUTCFullYear(), birthDate.getUTCMonth(), birthDate.getUTCDate());
+
+    let age = today.getFullYear() - birthDateLocal.getFullYear();
+    const monthDifference = today.getMonth() - birthDateLocal.getMonth();
+
+    // If the current month is before the birth month, or it's the same month but the current day is before the birth day,
+    // then the birthday for this year hasn't happened yet.
+    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDateLocal.getDate())) {
+        age--;
+    }
+
+    return age;
+}
+
+/**
+ * Tries to parse a date string by attempting a list of supported formats.
+ * @param {string} dateString The string to parse.
+ * @returns {Date|null} A valid Date object or null if parsing fails.
+ */
+function parseArbitraryDate(dateString) {
+    for (const format of SUPPORTED_FORMATS) {
+        const parts = getPartsFromFormat(dateString, format);
+
+        // If parts were successfully extracted for the current format
+        if (parts) {
+            const { year, month, day } = parts;
+
+            // Create a date object. We use Date.UTC to work with dates in a timezone-agnostic way,
+            // preventing issues where the user's local timezone might shift the date.
+            const date = new Date(Date.UTC(year, month - 1, day));
+
+            // --- Validation Step ---
+            // This is crucial. It checks if the created date is valid. For example, if the input was
+            // '2023-02-30', new Date() would create '2023-03-02' (it "rolls over").
+            // This check ensures the day, month, and year haven't changed.
+            if (date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day) {
+                // Success! We found a valid format.
+                console.log('Date matched format:', format);
+                return date;
+            }
+        }
+    }
+
+    return null;
+}
+
+/**
+ * A helper function to extract year, month, and day from a string based on a format specifier.
+ * @param {string} dateString The input date string (e.g., "21/07/2024").
+ * @param {string} format The format specifier (e.g., 'DD/MM/YYYY').
+ * @returns {{year: number, month: number, day: number}|null} An object with parts, or null if it doesn't match.
+ */
+function getPartsFromFormat(dateString, format) {
+    // Use a regex to split by a hyphen or a slash.
+    const formatParts = format.split(/[-/]/);
+    const dateParts = dateString.split(/[-/]/);
+
+    // The number of parts must match (e.g., 3 parts for date, 3 for format).
+    if (formatParts.length !== dateParts.length) {
+        return null;
+    }
+
+    const parts = {};
+    for (let i = 0; i < formatParts.length; i++) {
+        // Assign the numeric part to the correct key (year, month, or day)
+        const key = formatParts[i].toLowerCase();
+        parts[key] = parseInt(dateParts[i], 10);
+    }
+
+    // If any part is not a number, the format is incorrect.
+    if (isNaN(parts.year) || isNaN(parts.month) || isNaN(parts.day)) {
+        return null;
+    }
+
+    return { year: parts.year, month: parts.month, day: parts.day };
+}
+
+function htmlEncode(str) {
+    // Replace < with &lt;
+    str = str.replace(/</g, "&lt;");
+    // Replace > with &gt;
+    str = str.replace(/>/g, "&gt;");
+    // Replace & with &amp;
+    str = str.replace(/&/g, "&amp;");
+    return str;
+}
+
 form.addEventListener('submit', (event) => {
     event.preventDefault(); // Prevent default form submission
     document.getElementById('loading').classList.remove('hidden');
@@ -152,91 +247,3 @@ form.addEventListener('submit', (event) => {
             console.error('Error uploading file:', error);
         });
 });
-
-function calculateAge(dateOfBirth) {
-    const today = new Date();
-    const birthDate = parseArbitraryDate(dateOfBirth);
-
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDiff = today.getMonth() - birthDate.getMonth();
-
-    // Adjust age if birthday hasn't happened yet this year
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-    }
-
-    return age;
-}
-
-/**
- * Tries to parse a date string by attempting a list of supported formats.
- * @param {string} dateString The string to parse.
- * @returns {Date|null} A valid Date object or null if parsing fails.
- */
-function parseArbitraryDate(dateString) {
-    for (const format of SUPPORTED_FORMATS) {
-        const parts = getPartsFromFormat(dateString, format);
-
-        // If parts were successfully extracted for the current format
-        if (parts) {
-            const { year, month, day } = parts;
-
-            // Create a date object. We use Date.UTC to work with dates in a timezone-agnostic way,
-            // preventing issues where the user's local timezone might shift the date.
-            const date = new Date(Date.UTC(year, month - 1, day));
-
-            // --- Validation Step ---
-            // This is crucial. It checks if the created date is valid. For example, if the input was
-            // '2023-02-30', new Date() would create '2023-03-02' (it "rolls over").
-            // This check ensures the day, month, and year haven't changed.
-            if (date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day) {
-                // Success! We found a valid format.
-                console.log('Date matched format:', format);
-                return date;
-            }
-        }
-    }
-
-    return null;
-}
-
-/**
- * A helper function to extract year, month, and day from a string based on a format specifier.
- * @param {string} dateString The input date string (e.g., "21/07/2024").
- * @param {string} format The format specifier (e.g., 'DD/MM/YYYY').
- * @returns {{year: number, month: number, day: number}|null} An object with parts, or null if it doesn't match.
- */
-function getPartsFromFormat(dateString, format) {
-    // Use a regex to split by a hyphen or a slash.
-    const formatParts = format.split(/[-/]/);
-    const dateParts = dateString.split(/[-/]/);
-
-    // The number of parts must match (e.g., 3 parts for date, 3 for format).
-    if (formatParts.length !== dateParts.length) {
-        return null;
-    }
-
-    const parts = {};
-    for (let i = 0; i < formatParts.length; i++) {
-        // Assign the numeric part to the correct key (year, month, or day)
-        const key = formatParts[i].toLowerCase();
-        parts[key] = parseInt(dateParts[i], 10);
-    }
-
-    // If any part is not a number, the format is incorrect.
-    if (isNaN(parts.year) || isNaN(parts.month) || isNaN(parts.day)) {
-        return null;
-    }
-
-    return { year: parts.year, month: parts.month, day: parts.day };
-}
-
-function htmlEncode(str) {
-    // Replace < with &lt;
-    str = str.replace(/</g, "&lt;");
-    // Replace > with &gt;
-    str = str.replace(/>/g, "&gt;");
-    // Replace & with &amp;
-    str = str.replace(/&/g, "&amp;");
-    return str;
-}
