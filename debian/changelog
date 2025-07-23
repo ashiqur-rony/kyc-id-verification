@@ -1,3 +1,10 @@
+id-verification (0.9.25) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Updated parsing date of birth string.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 23 July 2025 15:47:00 -0600
+
 id-verification (0.9.24) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
