@@ -167,7 +167,7 @@ form.addEventListener('submit', (event) => {
                 }
                 if (parsed_data.hasOwnProperty('Contains DOB') && parsed_data['Contains DOB'].toLowerCase() === 'yes') {
                     if (parsed_data.hasOwnProperty('Date of Birth (DOB)') && parsed_data['Date of Birth (DOB)'] !== '') {
-                        dob = parsed_data['Date of Birth (DOB)'];
+                        dob = parseArbitraryDate(parsed_data['Date of Birth (DOB)']);
                         contains_dob = true;
                         age = calculateAge(dob);
                     }
