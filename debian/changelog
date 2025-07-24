@@ -1,23 +1,30 @@
+id-verification (0.9.27) bookworm; urgency=medium
+
+  [ Ashiqur Rahman ]
+  * Fixed JS error in displaying age.
+
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Thu, 24 July 2025 14:45:00 -0600
+
 id-verification (0.9.26) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
   * Fixed JS error in parsing date of birth string.
 
- -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 23 July 2025 16:49:00 -0600
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Wed, 23 July 2025 16:49:00 -0600
 
 id-verification (0.9.25) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
   * Updated parsing date of birth string.
 
- -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 23 July 2025 15:47:00 -0600
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Wed, 23 July 2025 15:47:00 -0600
 
 id-verification (0.9.24) bookworm; urgency=medium
 
   [ Ashiqur Rahman ]
   * Updated age calculation function.
 
- -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Mon, 23 July 2025 15:12:00 -0600
+ -- Ashiqur Rahman <ashiqur.r@iabsis.com>  Wed, 23 July 2025 15:12:00 -0600
 
 id-verification (0.9.23) bookworm; urgency=medium
 
