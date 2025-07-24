@@ -178,7 +178,11 @@ form.addEventListener('submit', (event) => {
                     if (parsed_data.hasOwnProperty('Date of Birth (DOB)') && parsed_data['Date of Birth (DOB)'] !== '') {
                         dob = parseArbitraryDate(parsed_data['Date of Birth (DOB)']);
                         contains_dob = true;
-                        age = calculateAge(dob);
+                        if(dob === null) {
+                            age = 0;
+                        } else {
+                            age = calculateAge(dob);
+                        }
                     }
                 }
                 if (parsed_data.hasOwnProperty('Valid Govt. ID') && parsed_data['Valid Govt. ID'].toLowerCase() === 'yes') {
@@ -201,7 +205,7 @@ form.addEventListener('submit', (event) => {
                         document.getElementById('resultOutput').innerHTML = 'Face matched with ID photo.<br>Verified age: ' + age + ' years<br>Verified Govt. ID: ' + id_type;
                         document.getElementById('resultOutput').classList.add('valid');
                     } else if (valid_govt_id && age < 18) {
-                        document.getElementById('resultOutput').innerHTML = 'Face matched with ID photo.<br>Verified age: ' + age + ' years<br>Verified Govt. ID: ' + id_type;
+                        document.getElementById('resultOutput').innerHTML = 'Face matched with ID photo.<br>Verified age: ' + age + ' years (DOB: ' + parsed_data['Date of Birth (DOB)'] + ')<br>Verified Govt. ID: ' + id_type;
                         document.getElementById('resultOutput').classList.add('invalid');
                     } else if (!valid_govt_id && age >= 18) {
                         document.getElementById('resultOutput').innerHTML = 'Face matched with ID photo.<br>Verified age: ' + age + ' years<br>Invalid Govt. ID: ' + id_type;
