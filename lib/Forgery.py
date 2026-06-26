@@ -191,6 +191,9 @@ class SIFTTest():
         self.image = cv2.imread(self.image_path)
 
     def sift_detector(self):
+        """
+        Detect SIFT keypoints and descriptors in the image.
+        """
         sift = cv2.SIFT_create()
         # sift = cv2.xfeatures2d.SIFT_create()
         gray = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
@@ -198,12 +201,18 @@ class SIFTTest():
         return self.key_points, self.descriptors
 
     def show_sift_features(self):
+        """
+        Show the SIFT keypoints on the image.
+        """
         gray_image = cv2.cvtColor(self.image, cv2.COLOR_BGR2GRAY)
         sift_image = cv2.drawKeypoints(
             self.image, self.key_points, self.image.copy())
         return sift_image
 
     def forgery_score(self, eps=120, min_sample=2):
+        """
+        Determine the forgery score based on the clustering of SIFT descriptors using DBSCAN.
+        """
         clusters = DBSCAN(eps=eps, min_samples=min_sample).fit(
             self.descriptors)
 
