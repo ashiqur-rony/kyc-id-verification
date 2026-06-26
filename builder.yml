@@ -1,7 +1,0 @@
-flows:
-- deb
-options:
- distrib: "debian"
- codename: "bookworm"
-modes:
-- ON_VERSION
